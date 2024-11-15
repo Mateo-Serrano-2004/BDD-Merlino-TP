@@ -1,7 +1,7 @@
 # BDD-Merlino-TP
 TP de Base de datos - Cátedra Merlino
 
-# Bakend
+# Backend
 
 El backend esta desarrollado con Flask que interactúa con bases de datos SQLite y MongoDB. Permite realizar operaciones CRUD en ambas bases de datos.  
 
