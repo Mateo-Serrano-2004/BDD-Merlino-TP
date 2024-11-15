@@ -1,34 +1,59 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from app.models import db, User, insert_user_mongo, get_users_mongo
+from flask import request, jsonify
+from app import app
+from app.models import SQLHandler, NoSQLHandler
 
-main = Blueprint('main', __name__)
+sql_handler = SQLHandler()
+no_sql_handler = NoSQLHandler()
 
-@main.route('/')
-def index():
-    users_sqlite = User.query.all()
+@app.route('/add_sql', methods=['POST'])
+def add_sql():
+    name = request.json['name']
+    email = request.json['email']
+    sql_handler.add_user(name, email)
+    return jsonify({'message': 'SQLUser added to SQL'}), 201
 
-    users_mongo = get_users_mongo()
+@app.route('/get_sql', methods=['GET'])
+def get_sql():
+    users = sql_handler.get_all_users()
+    users_data = [{'id': user.id, 'name': user.name, 'email': user.email} for user in users]
+    return jsonify(users_data)
 
-    return render_template('index.html', users_sqlite=users_sqlite, users_mongo=users_mongo)
+@app.route('/update_sql/<int:id>', methods=['PUT'])
+def update_sql(id):
+    name = request.json['name']
+    email = request.json['email']
+    sql_handler.update_user(id, name, email)
+    return jsonify({'message': 'SQLUser updated in SQL'})
 
-@main.route('/add_sqlite', methods=['POST'])
-def add_sqlite():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        
-        new_user = User(username=username, email=email)
-        db.session.add(new_user)
-        db.session.commit()
-        
-        return redirect(url_for('main.index'))
+@app.route('/delete_sql/<int:id>', methods=['DELETE'])
+def delete_sql(id):
+    sql_handler.delete_user(id)
+    return jsonify({'message': 'SQLUser deleted from SQL'})
 
-@main.route('/add_mongo', methods=['POST'])
-def add_mongo():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        
-        insert_user_mongo(username, email)
-        
-        return redirect(url_for('main.index'))
+@app.route('/add_no_sql', methods=['POST'])
+def add_no_sql():
+    name = request.json['name']
+    email = request.json['email']
+    new_user = {'name': name, 'email': email}
+    no_sql_handler.create(new_user)
+    return jsonify({'message': 'SQLUser added to Mongosql_db'}), 201
+
+@app.route('/get_no_sql', methods=['GET'])
+def get_no_sql():
+    users = no_sql_handler.read_all()
+    users_data = [{'id': str(user['_id']), 'name': user['name'], 'email': user['email']} for user in users]
+    return jsonify(users_data)
+
+@app.route('/update_no_sql/<user_id>', methods=['PUT'])
+def update_no_sql(user_id):
+    updated_data = {
+        'name': request.json['name'],
+        'email': request.json['email']
+    }
+    no_sql_handler.update(user_id, updated_data)
+    return jsonify({'message': 'SQLUser updated in Mongosql_db'})
+
+@app.route('/delete_no_sql/<user_id>', methods=['DELETE'])
+def delete_no_sql(user_id):
+    no_sql_handler.delete(user_id)
+    return jsonify({'message': 'SQLUser deleted from Mongosql_db'})

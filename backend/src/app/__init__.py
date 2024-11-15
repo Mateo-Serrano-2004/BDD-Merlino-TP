@@ -1,19 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from pymongo import MongoClient
-from ..config import Config
+from config import Config
 
-db = SQLAlchemy()
-client = MongoClient("mongodb://localhost:27017")
-mongo_db = client["mydatabase"]
+app = Flask(__name__)
+app.config.from_object(Config)
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
+sql_db = SQLAlchemy(app)
 
-    db.init_app(app)
+no_sql_db = MongoClient(app.config['MONGO_URI']).get_database()
 
-    from app.routes import main
-    app.register_blueprint(main)
-
-    return app
+from app import routes
