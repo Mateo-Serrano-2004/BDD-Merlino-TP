@@ -1,15 +1,19 @@
-from . import db
+from app import db, mongo_db
 
-class UserSQL(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
+    username = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
 
     def __repr__(self):
-        return f'<UserSQL {self.name}>'
+        return f"User('{self.username}', '{self.email}')"
 
-class UserNoSQL:
-    def __init__(self, _id, name, email):
-        self._id = _id
-        self.name = name
-        self.email = email
+def insert_user_mongo(username, email):
+    user = {
+        "username": username,
+        "email": email
+    }
+    mongo_db.users.insert_one(user)
+
+def get_users_mongo():
+    return mongo_db.users.find()
