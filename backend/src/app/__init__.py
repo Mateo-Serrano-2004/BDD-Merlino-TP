@@ -10,4 +10,8 @@ sql_db = SQLAlchemy(app)
 
 no_sql_db = MongoClient(app.config['MONGO_URI']).get_database()
 
+# creo las tablas sql
+with app.app_context():
+    sql_db.create_all()
+
 from app import routes
