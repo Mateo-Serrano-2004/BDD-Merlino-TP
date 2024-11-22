@@ -1,7 +1,7 @@
 from flask import request
 from flask_restx import Resource
-from app import api
-from app.models import SQLHandler, NoSQLHandler
+from .__init__ import api
+from .models import SQLHandler, NoSQLHandler
 
 sql_handler = SQLHandler()
 no_sql_handler = NoSQLHandler()
@@ -43,17 +43,17 @@ class UsersNoSQL(Resource):
         no_sql_handler.create(new_user)
         return {'message': 'User added to NoSQL database'}, 201
 
-@api.route('/no_sql/users/<user_id>')
+@api.route('/no_sql/users/<int:id>')
 class UserNoSQL(Resource):
-    def put(self, user_id):
+    def put(self, id):
         updated_data = {
             'name': request.json['name'],
             'email': request.json['email']
         }
-        no_sql_handler.update(user_id, updated_data)
+        no_sql_handler.update(id, updated_data)
         return {'message': 'User updated in NoSQL database'}, 201
 
-    def delete(self, user_id):
-        no_sql_handler.delete(user_id)
+    def delete(self, id):
+        no_sql_handler.delete(id)
         return {'message': 'User deleted from NoSQL database'}, 200
     
