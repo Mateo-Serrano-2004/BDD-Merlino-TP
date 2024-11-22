@@ -26,6 +26,8 @@ class SQLHandler:
     @staticmethod
     def add_user(name, email, role_name):
         new_user = User(name=name, email=email, role_name=role_name)
+        if not Role.query.get(role_name):
+            return None
         sql_db.session.add(new_user)
         sql_db.session.commit()
         return new_user
@@ -89,6 +91,8 @@ class SQLHandler:
     @staticmethod
     def add_post(title, content, author_id):
         new_post = Post(title=title, content=content, author_id=author_id)
+        if not User.query.get(author_id):
+            return None
         sql_db.session.add(new_post)
         sql_db.session.commit()
         return new_post
