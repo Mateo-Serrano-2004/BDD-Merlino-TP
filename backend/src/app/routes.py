@@ -9,86 +9,75 @@ no_sql_handler = NoSQLHandler()
 @api.route('/sql/users')
 class UsersSQL(Resource):
     def get(self):
-        users = sql_handler.get_all_users()
-        return users, 200
+        return sql_handler.get_all_users(), 200
 
     def post(self):
-        name = request.json['name']
-        email = request.json['email']
-        role_name = request.json['role']
-        sql_handler.add_user(name, email, role_name)
+        if not sql_handler.add_user(request.json['name'], request.json['email'], request.json['role']):
+            return {'message': 'Role does not exist'}, 404
         return {'message': 'User added to SQL database'}, 201
 
 @api.route('/sql/users/<int:id>')
 class UserSQL(Resource):
     def put(self, id):
-        name = request.json['name']
-        email = request.json['email']
-        sql_handler.update_user(id, name, email)
+        if not sql_handler.update_user(id, request.json['name'], request.json['email']):
+            return {'message': 'User does not exist'}, 404
         return {'message': 'User updated in SQL database'}, 200
 
     def delete(self, id):
-        sql_handler.delete_user(id)
+        if not sql_handler.delete_user(id):
+            return {'message': 'User does not exist'}, 404
         return {'message': 'User deleted from SQL database'}, 200
     
 @api.route('/sql/roles')
 class RolesSQL(Resource):
     def get(self):
-        roles = sql_handler.get_all_roles()
-        return roles, 200
+        return sql_handler.get_all_roles(), 200
 
     def post(self):
-        name = request.json['name']
-        description = request.json['description']
-        sql_handler.add_role(name, description)
+        sql_handler.add_role(request.json['name'], request.json['description'])
         return {'message': 'Role added to SQL database'}, 201
     
 @api.route('/sql/roles/<string:name>')
 class RoleSQL(Resource):
     def put(self, name):
-        description = request.json['description']
-        sql_handler.update_role(name, description)
+        if not sql_handler.update_role(name, request.json['description']):
+            return {'message': 'Role does not exist'}, 404
         return {'message': 'Role updated in SQL database'}, 200
 
     def delete(self, name):
-        sql_handler.delete_role(name)
+        if not sql_handler.delete_role(name):
+            return {'message': 'Role does not exist'}, 404
         return {'message': 'Role deleted from SQL database'}, 200
 
 @api.route('/sql/posts')
 class PostsSQL(Resource):
     def get(self):
-        posts = sql_handler.get_all_posts()
-        return posts, 200
+        return sql_handler.get_all_posts(), 200
 
     def post(self):
-        title = request.json['title']
-        content = request.json['content']
-        author_id = request.json['author_id']
-        sql_handler.add_post(title, content, author_id)
+        if not sql_handler.add_post(request.json['title'], request.json['content'], request.json['author_id']):
+            return {'message': 'User does not exist'}, 404
         return {'message': 'Post added to SQL database'}, 201
     
 @api.route('/sql/posts/<int:id>')
 class PostSQL(Resource):
     def put(self, id):
-        title = request.json['title']
-        content = request.json['content']
-        sql_handler.update_post(id, title, content)
+        if not sql_handler.update_post(id, request.json['title'], request.json['content']):
+            return {'message': 'Post does not exist'}, 404
         return {'message': 'Post updated in SQL database'}, 200
 
     def delete(self, id):
-        sql_handler.delete_post(id)
+        if not sql_handler.delete_post(id):
+            return {'message': 'Post does not exist'}, 404
         return {'message': 'Post deleted from SQL database'}, 200
 
 @api.route('/no_sql/users')
 class UsersNoSQL(Resource):
     def get(self):
-        users = no_sql_handler.read_all()
-        return users, 200
+        return no_sql_handler.read_all(), 200
 
     def post(self):
-        name = request.json['name']
-        email = request.json['email']
-        new_user = {'name': name, 'email': email}
+        new_user = {'name': request.json['name'], 'email': request.json['email']}
         no_sql_handler.create(new_user)
         return {'message': 'User added to NoSQL database'}, 201
 
