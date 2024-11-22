@@ -5,14 +5,14 @@ class User(sql_db.Model):
     id = sql_db.Column(sql_db.Integer, primary_key=True)
     name = sql_db.Column(sql_db.String(50), nullable=False)
     email = sql_db.Column(sql_db.String(120), unique=True, nullable=False)
-    '''role_name = sql_db.Column(sql_db.Integer, sql_db.ForeignKey('roles.name'), nullable=False)
-    posts = sql_db.relationship('Post', backref='author', lazy=True)'''
+    role_name = sql_db.Column(sql_db.Integer, sql_db.ForeignKey('roles.name'), nullable=False)
+    posts = sql_db.relationship('Post', backref='author', lazy=True)
 
 class Role(sql_db.Model):
     __tablename__ = 'roles'
     name = sql_db.Column(sql_db.String(50), primary_key=True)
     description = sql_db.Column(sql_db.String(255), nullable=True)
-    #users = sql_db.relationship('User', backref='role', lazy=True)
+    users = sql_db.relationship('User', backref='role', lazy=True)
 
 class Post(sql_db.Model):
     __tablename__ = 'posts'
@@ -24,8 +24,8 @@ class Post(sql_db.Model):
 class SQLHandler:
 
     @staticmethod
-    def add_user(name, email):
-        new_user = User(name=name, email=email)
+    def add_user(name, email, role_name):
+        new_user = User(name=name, email=email, role_name=role_name)
         sql_db.session.add(new_user)
         sql_db.session.commit()
         return new_user
@@ -86,15 +86,18 @@ class SQLHandler:
         sql_db.session.commit()
         return role
 
+    @staticmethod
     def add_post(title, content, author_id):
         new_post = Post(title=title, content=content, author_id=author_id)
         sql_db.session.add(new_post)
         sql_db.session.commit()
         return new_post
 
+    @staticmethod
     def get_all_posts():
         return Post.query.all()
     
+    @staticmethod
     def update_post(id, title, content):
         post = Post.query.get(id)
         if not post:
@@ -104,6 +107,7 @@ class SQLHandler:
         sql_db.session.commit()
         return post
     
+    @staticmethod
     def delete_post(id):
         post = Post.query.get(id)
         if not post:

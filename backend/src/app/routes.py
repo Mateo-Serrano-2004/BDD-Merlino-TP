@@ -15,7 +15,8 @@ class UsersSQL(Resource):
     def post(self):
         name = request.json['name']
         email = request.json['email']
-        sql_handler.add_user(name, email)
+        role_name = request.json['role']
+        sql_handler.add_user(name, email, role_name)
         return {'message': 'User added to SQL database'}, 201
 
 @api.route('/sql/users/<int:id>')
@@ -29,6 +30,54 @@ class UserSQL(Resource):
     def delete(self, id):
         sql_handler.delete_user(id)
         return {'message': 'User deleted from SQL database'}, 200
+    
+@api.route('/sql/roles')
+class RolesSQL(Resource):
+    def get(self):
+        roles = sql_handler.get_all_roles()
+        return roles, 200
+
+    def post(self):
+        name = request.json['name']
+        description = request.json['description']
+        sql_handler.add_role(name, description)
+        return {'message': 'Role added to SQL database'}, 201
+    
+@api.route('/sql/roles/<string:name>')
+class RoleSQL(Resource):
+    def put(self, name):
+        description = request.json['description']
+        sql_handler.update_role(name, description)
+        return {'message': 'Role updated in SQL database'}, 200
+
+    def delete(self, name):
+        sql_handler.delete_role(name)
+        return {'message': 'Role deleted from SQL database'}, 200
+
+@api.route('/sql/posts')
+class PostsSQL(Resource):
+    def get(self):
+        posts = sql_handler.get_all_posts()
+        return posts, 200
+
+    def post(self):
+        title = request.json['title']
+        content = request.json['content']
+        author_id = request.json['author_id']
+        sql_handler.add_post(title, content, author_id)
+        return {'message': 'Post added to SQL database'}, 201
+    
+@api.route('/sql/posts/<int:id>')
+class PostSQL(Resource):
+    def put(self, id):
+        title = request.json['title']
+        content = request.json['content']
+        sql_handler.update_post(id, title, content)
+        return {'message': 'Post updated in SQL database'}, 200
+
+    def delete(self, id):
+        sql_handler.delete_post(id)
+        return {'message': 'Post deleted from SQL database'}, 200
 
 @api.route('/no_sql/users')
 class UsersNoSQL(Resource):
