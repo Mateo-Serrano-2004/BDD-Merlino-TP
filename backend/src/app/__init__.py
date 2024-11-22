@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from pymongo import MongoClient
-from config import Config
+from .config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)

@@ -1,4 +1,4 @@
-from app import sql_db, no_sql_db
+from .__init__ import sql_db, no_sql_db
 
 class SQLUser(sql_db.Model):
     id = sql_db.Column(sql_db.Integer, primary_key=True)
