@@ -3,23 +3,17 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 ---
 
-<Layout title="Welcome to Astro." description='Indexing page initial to Astro' icon='/favicon.svg'>
+<Layout title="Page NonSQL BDD" description='Page where we management a bdd nonSQL' icon='/favicon.svg'>
 	<main>
 		<ul role="list" class="link-card-grid">
 			<Card
-				href="/sql"
-				title="Base de datos SQL"
-				body="Aqui tenemos el uso de la base de datos SQL paso a paso."
-			/>
-			<Card
-				href="/nonsql"
-				title="Base de datos NonSQL"
-				body="Aqui hacemos uso de una base de datos NonSQL y mostramos sus devoluciones"
+				href="/"
+				title="Go back to the index"
+				body="Con este boton volvemos a la pagina principal"
 			/>
 		</ul>
 	</main>
 </Layout>
-
 <style>
 	main {
 		display: flex;
