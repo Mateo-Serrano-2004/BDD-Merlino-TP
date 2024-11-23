@@ -1,50 +1,52 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
 interface Props {
 	title: string;
+	description: string;
+	icon: string;
 }
 
-const { title } = Astro.props;
+const { title, description, icon } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" href={icon} />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<ViewTransitions />
 	</head>
 	<body>
 		<slot />
 	</body>
 </html>
 <style is:global>
+	*{
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
 	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
+		--background: rgb(12, 0, 20);
+		--color-text: black;
+		--font-aplicacion: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto ;
+		--navbar-height: 100px;
+	}
+	html.dark {
+		--background:rgb(252, 235, 253);
+		--color-text: white;
 	}
 	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
+		font-family: var(--font-aplicacion), sans-serif;
 	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
+</style>
+<style>
+	body {
+		color: var(--color-text);
+		background-color: var(--background);
 	}
 </style>
