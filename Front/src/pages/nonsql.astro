@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
+---
+
+<Layout title="Page NonSQL BDD" description='Page where we management a bdd nonSQL' icon='/favicon.svg'>
+	<main>
+		<ul role="list" class="link-card-grid">
+			<Card
+				href="/"
+				title="Go back to the index"
+				body="Con este boton volvemos a la pagina principal"
+			/>
+		</ul>
+	</main>
+</Layout>
+<style>
+	main {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 100vh;
+	}
+	.link-card-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+</style>
