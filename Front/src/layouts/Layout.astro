@@ -41,6 +41,8 @@ const { title, description, icon } = Astro.props;
 	body {
 		color: var(--color-text);
 		background-image: url('background.jpg');
-		background-position-x: -100px;
+		background-position-x: -500px;
+		backdrop-filter: blur(2px); /* Aplica el desenfoque */
+  		-webkit-backdrop-filter: blur(2px); /* Para compatibilidad con Safari */
 	}
 </style>
