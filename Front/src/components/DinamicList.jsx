@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import "./DinamicList.css";
 
 const DynamicListContext = ({ refreshTrigger, url }) => {
   const [items, setItems] = useState([]);
@@ -22,6 +23,8 @@ const DynamicListContext = ({ refreshTrigger, url }) => {
 
   if (loading) return <p>Cargando...</p>;
 
+  if (items.length === 0) return <p>No hay usuarios registrados o esta fallando el back</p>;
+  
   return (
     <ul>
       {items.map((item) => (
@@ -39,8 +42,8 @@ const DinamicList = ({ url  }) => {
   };
 
   return (
-    <div>
-      <button onClick={handleRefresh}>Actualizar Lista</button>
+    <div className='cover'>
+      <button className='updateButton' onClick={handleRefresh}>Actualizar Lista</button>
       <DynamicListContext refreshTrigger={refreshTrigger} url={url} />
     </div>
   );
