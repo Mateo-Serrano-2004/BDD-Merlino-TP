@@ -13,6 +13,11 @@ import links from '../../public/links.json';
 				title="Go back to the sql admin"
 				body="Con este boton volvemos a la pagina de sql"
 			/>
+			<Card
+				href="/"
+				title="Go back to the home"
+				body="Con este boton volvemos a la pagina de inicio"
+			/>
 		</ul>
 		<DinamicList url={links['development-backend']['other-links'].sql.user['get-users']} client:load/>
 	</main>
@@ -22,7 +27,9 @@ import links from '../../public/links.json';
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		flex-direction: row-reverse;
 		min-height: 100vh;
+		gap: 1.5rem;
 	}
 	.link-card-grid {
 		display: flex;

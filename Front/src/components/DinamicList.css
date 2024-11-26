@@ -9,14 +9,14 @@
   backdrop-filter: blur(50%); /* Aplica el desenfoque */
   -webkit-backdrop-filter: blur(50%); /* Para compatibilidad con Safari */
   border-radius: 16px;
-	border: 2px solid #ffffffab;
+	border: 3px solid #ffffffab;
 	padding: 10px;
 }
 
 .updateButton {
 	background-color: #b504cce1;
 	color: #ffffffcb;
-	border: 1px solid #e2bafad5;
+	border: 2px solid #e2bafad5;
 	border-radius: 8px;
 	padding: 8px;
 	margin: 5px;
