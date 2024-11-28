@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask_restx import Resource
 from .__init__ import api
 from .models import SQLHandler, NoSQLHandler
@@ -10,17 +10,18 @@ no_sql_handler = NoSQLHandler()
 @api.route("/sql/users")
 class UsersSQL(Resource):
     def get(self):
-        return sql_handler.get_all_users(), 200
+        return jsonify(sql_handler.get_all_users()), 200
 
 
 @api.route("/sql/roles/<string:role_name>/users")
 class UserWithRoleSQL(Resource):
     def post(self, role_name):
-        if not sql_handler.add_user(
+        new_user = sql_handler.add_user(
             request.json["name"], request.json["email"], role_name 
-        ):
+        )
+        if not new_user:
             return {"message": "Role does not exist"}, 404
-        return {"message": "User added to SQL database"}, 201
+        return jsonify(new_user), 201
 
 
 @api.route("/sql/users/<int:id>")
@@ -39,12 +40,11 @@ class UserSQL(Resource):
 @api.route("/sql/roles")
 class RolesSQL(Resource):
     def get(self):
-        return sql_handler.get_all_roles(), 200
-
+        return jsonify(sql_handler.get_all_roles()), 200
+    
     def post(self):
-        sql_handler.add_role(request.json["name"], request.json["description"])
-        return {"message": "Role added to SQL database"}, 201
-
+        new_role = sql_handler.add_role(request.json["name"], request.json["description"])
+        return jsonify(new_role), 201
 
 @api.route("/sql/roles/<string:name>")
 class RoleSQL(Resource):
@@ -62,17 +62,18 @@ class RoleSQL(Resource):
 @api.route("/sql/posts")
 class PostsSQL(Resource):
     def get(self):
-        return sql_handler.get_all_posts(), 200
+        return jsonify(sql_handler.get_all_posts()), 200
 
 
 @api.route("/sql/users/<int:user_id>/posts")
 class PostWithUserSQL(Resource):
     def post(self, user_id):
-        if not sql_handler.add_post(
+        new_post = sql_handler.add_post(
             request.json["title"], request.json["content"], user_id
-        ):
+        )
+        if not new_post:
             return {"message": "User does not exist"}, 404
-        return {"message": "Post added to SQL database"}, 201
+        return jsonify(new_post), 201
 
 
 @api.route("/sql/posts/<int:id>")

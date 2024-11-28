@@ -11,12 +11,23 @@ class User(sql_db.Model):
     )
     posts = sql_db.relationship("Post", backref="author", lazy=True)
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role_name": self.role_name,
+        }
+
 
 class Role(sql_db.Model):
     __tablename__ = "roles"
     name = sql_db.Column(sql_db.String(50), primary_key=True)
     description = sql_db.Column(sql_db.String(255), nullable=True)
     users = sql_db.relationship("User", backref="role", lazy=True)
+
+    def to_dict(self):
+        return {"name": self.name, "description": self.description}
 
 
 class Post(sql_db.Model):
@@ -28,14 +39,22 @@ class Post(sql_db.Model):
         sql_db.Integer, sql_db.ForeignKey("users.id"), nullable=False
     )
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "author_id": self.author_id,
+        }
+
 
 class SQLHandler:
 
     @staticmethod
     def add_user(name, email, role_name):
-        new_user = User(name=name, email=email, role_name=role_name)
         if not Role.query.get(role_name):
             return None
+        new_user = User(name=name, email=email, role_name=role_name)
         sql_db.session.add(new_user)
         sql_db.session.commit()
         return new_user
@@ -98,9 +117,9 @@ class SQLHandler:
 
     @staticmethod
     def add_post(title, content, author_id):
-        new_post = Post(title=title, content=content, author_id=author_id)
         if not User.query.get(author_id):
             return None
+        new_post = Post(title=title, content=content, author_id=author_id)
         sql_db.session.add(new_post)
         sql_db.session.commit()
         return new_post
