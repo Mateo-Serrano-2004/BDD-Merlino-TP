@@ -3,7 +3,7 @@ from config import Config
 from models import sql_db, User, Role, Post
 
 app = Flask(__name__)
-app.config.from_object(Config) 
+app.config.from_object(Config)
 sql_db.init_app(app)
 
 with app.app_context():

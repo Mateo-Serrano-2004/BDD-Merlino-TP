@@ -21,15 +21,17 @@ class User(sql_db.Model):
             "role_name": self.role_name,
         }
 
+
 class Role(sql_db.Model):
     __tablename__ = "roles"
     name = sql_db.Column(sql_db.String(50), primary_key=True)
     description = sql_db.Column(sql_db.Text, nullable=False)
-    
+
     users = sql_db.relationship("User", backref="role", lazy=True)
 
     def to_dict(self):
         return {"name": self.name, "description": self.description}
+
 
 class Post(sql_db.Model):
     __tablename__ = "posts"
@@ -48,4 +50,3 @@ class Post(sql_db.Model):
             "user_id": self.user_id,
             "user": self.user.to_dict(),
         }
-
