@@ -12,9 +12,12 @@ class UsersSQL(Resource):
     def get(self):
         return sql_handler.get_all_users(), 200
 
-    def post(self):
+
+@api.route("/sql/roles/<string:role_name>/users")
+class UserWithRoleSQL(Resource):
+    def post(self, role_name):
         if not sql_handler.add_user(
-            request.json["name"], request.json["email"], request.json["role_name"]
+            request.json["name"], request.json["email"], role_name 
         ):
             return {"message": "Role does not exist"}, 404
         return {"message": "User added to SQL database"}, 201
@@ -61,9 +64,12 @@ class PostsSQL(Resource):
     def get(self):
         return sql_handler.get_all_posts(), 200
 
-    def post(self):
+
+@api.route("/sql/users/<int:user_id>/posts")
+class PostWithUserSQL(Resource):
+    def post(self, user_id):
         if not sql_handler.add_post(
-            request.json["title"], request.json["content"], request.json["author_id"]
+            request.json["title"], request.json["content"], user_id
         ):
             return {"message": "User does not exist"}, 404
         return {"message": "Post added to SQL database"}, 201
