@@ -11,25 +11,25 @@ class User(sql_db.Model):
     role_name = sql_db.Column(
         sql_db.String(50), sql_db.ForeignKey("roles.name"), nullable=False
     )
-    role = sql_db.relationship("Role", backref=sql_db.backref("users", lazy=True))
+
+    posts = sql_db.relationship("Post", backref="user", lazy=True)
 
     def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
             "role_name": self.role_name,
-            "role": self.role.to_dict(),
         }
-
 
 class Role(sql_db.Model):
     __tablename__ = "roles"
     name = sql_db.Column(sql_db.String(50), primary_key=True)
     description = sql_db.Column(sql_db.Text, nullable=False)
+    
+    users = sql_db.relationship("User", backref="role", lazy=True)
 
     def to_dict(self):
         return {"name": self.name, "description": self.description}
-
 
 class Post(sql_db.Model):
     __tablename__ = "posts"
@@ -39,7 +39,6 @@ class Post(sql_db.Model):
     user_id = sql_db.Column(
         sql_db.Integer, sql_db.ForeignKey("users.id"), nullable=False
     )
-    user = sql_db.relationship("User", backref=sql_db.backref("posts", lazy=True))
 
     def to_dict(self):
         return {
@@ -49,3 +48,4 @@ class Post(sql_db.Model):
             "user_id": self.user_id,
             "user": self.user.to_dict(),
         }
+
