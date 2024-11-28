@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
+from config import Config
 from models import sql_db, User, Role, Post
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config.from_object(Config) 
 sql_db.init_app(app)
 
 with app.app_context():
@@ -44,7 +44,7 @@ def update_user(role_name, id):
             return jsonify({"message": "Role not found"}), 404
         user.role_name = role_name
         sql_db.session.commit()
-        return jsonify(user.to_dict()), 200
+        return jsonify(user.to_dict())
     return jsonify({"message": "User not found"}), 404
 
 
@@ -68,7 +68,7 @@ def get_roles():
 def get_role(id):
     role = Role.query.get(id)
     if role:
-        return jsonify(role.to_dict()), 200
+        return jsonify(role.to_dict())
     return jsonify({"message": "Role not found"}), 404
 
 
@@ -88,7 +88,7 @@ def update_role(id):
     if role:
         role.name = data["name"]
         sql_db.session.commit()
-        return jsonify(role.to_dict()), 200
+        return jsonify(role.to_dict())
     return jsonify({"message": "Role not found"}), 404
 
 
@@ -98,7 +98,7 @@ def delete_role(id):
     if role:
         sql_db.session.delete(role)
         sql_db.session.commit()
-        return jsonify({"message": "Role deleted"}), 200
+        return jsonify({"message": "Role deleted"})
     return jsonify({"message": "Role not found"}), 404
 
 
@@ -138,7 +138,7 @@ def update_post(id):
             return jsonify({"message": "User not found"}), 404
         post.user_id = data["user_id"]
         sql_db.session.commit()
-        return jsonify(post.to_dict()), 200
+        return jsonify(post.to_dict())
     return jsonify({"message": "Post not found"}), 404
 
 
@@ -148,7 +148,7 @@ def delete_post(id):
     if post:
         sql_db.session.delete(post)
         sql_db.session.commit()
-        return jsonify({"message": "Post deleted"}), 200
+        return jsonify({"message": "Post deleted"})
     return jsonify({"message": "Post not found"}), 404
 
 
