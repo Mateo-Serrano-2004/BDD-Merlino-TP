@@ -17,7 +17,7 @@ class User(sql_db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "role_id": self.role_id,
+            "role_name": self.role_name,
             "role": self.role.to_dict(),
         }
 
