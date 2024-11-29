@@ -57,6 +57,10 @@ def delete_user(id):
     if user:
         sqlite_db.session.delete(user)
         sqlite_db.session.commit()
+        posts = mongo.db.posts.delete_many({"user_id": id})
+        for post in posts:
+            mongo.db.comments.delete_many({"post_id": post["_id"]})
+        mongo.db.comments.delete_many({"user_id": id})
         return 204
     return jsonify({"message": "User not found"}), 404
 
@@ -100,6 +104,9 @@ def update_role(name):
 def delete_role(name):
     role = Role.query.get(name)
     if role:
+        users = User.query.filter_by(role_name=name).all()
+        for user in users:
+            delete_user(user.id)
         sqlite_db.session.delete(role)
         sqlite_db.session.commit()
         return 204
@@ -133,16 +140,16 @@ def create_post():
     return jsonify(result), 201
 
 
-@app.route("/posts/<string:post_id>", methods=["PUT"])
-def update_post(post_id):
+@app.route("/posts/<string:id>", methods=["PUT"])
+def update_post(id):
     try:
         data = request.get_json()
         if not data:
             return jsonify({"message": "No data provided"}), 400
-        if data["user_id"] and not User.query.get(data["user_id"]):
-            return jsonify({"message": "User not found"}), 404
+        if data["user_id"]:
+            return jsonify({"message": "User cannot be updated"}), 400
         updated_post = mongo.db.posts.find_one_and_update(
-            {"_id": ObjectId(post_id)}, {"$set": data}, return_document=True
+            {"_id": ObjectId(id)}, {"$set": data}, return_document=True
         )
         if not updated_post:
             return jsonify({"message": "Post not found"}), 404
@@ -158,6 +165,7 @@ def delete_post(post_id):
         result = mongo.db.posts.delete_one({"_id": ObjectId(post_id)})
         if result.deleted_count == 0:
             return jsonify({"message": "Post not found"}), 404
+        mongo.db.comments.delete_many({"post_id": post_id})
         return 204
     except Exception as e:
         return jsonify({"message": "Error processing request", "error": str(e)}), 400
@@ -167,6 +175,16 @@ def delete_post(post_id):
 def get_comments():
     return jsonify(list(mongo.db.comments.find({})))
 
+@app.route("/comments/<string:comment_id>", methods=["GET"])
+def get_comment(comment_id):
+    try:
+        comment = mongo.db.comments.find_one({"_id": ObjectId(comment_id)})
+        if not comment:
+            return jsonify({"message": "Comment not found"}), 404
+        comment["_id"] = str(comment["_id"])
+        return jsonify(comment)
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
 @app.route("/comments", methods=["POST"])
 def create_comment():
@@ -209,42 +227,7 @@ def delete_comment(comment_id):
         return 204
     except Exception as e:
         return jsonify({"message": "Error processing request", "error": str(e)}), 400
-
-
-@app.route("/media", methods=["GET"])
-def get_media():
-    return jsonify(list(mongo.db.media.find({})))
-
-
-@app.route("/media", methods=["POST"])
-def create_media():
-    try:
-        data = request.get_json()
-        if (
-            data["post_id"]
-            and not mongo.db.posts.find_one({"_id": ObjectId(data["post_id"])})
-        ) or (
-            data["comment_id"]
-            and not mongo.db.comments.find_one({"_id": ObjectId(data["comment_id"])})
-        ):
-            return jsonify({"message": "Post not found"}), 404
-        result = mongo.db.media.insert_one(data)
-        result["_id"] = str(result["_id"])
-        return jsonify(result), 201
-    except Exception as e:
-        return jsonify({"message": "Error processing request", "error": str(e)}), 400
-
-
-@app.route("/media/<string:media_id>", methods=["DELETE"])
-def delete_media(media_id):
-    try:
-        result = mongo.db.media.delete_one({"_id": ObjectId(media_id)})
-        if result.deleted_count == 0:
-            return jsonify({"message": "Media not found"}), 404
-        return 204
-    except Exception as e:
-        return jsonify({"message": "Error processing request", "error": str(e)}), 400
-
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
