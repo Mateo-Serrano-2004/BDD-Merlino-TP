@@ -130,7 +130,8 @@ def create_post():
     if not User.query.get(data["user_id"]):
         return jsonify({"message": "User not found"}), 404
     result = mongo.db.posts.insert_one(data)
-    return jsonify({"_id": str(result.inserted_id), "message": "Post created"}), 201
+    result["_id"] = str(result["_id"])
+    return jsonify(result), 201
 
 
 @app.route("/posts/<string:post_id>", methods=["PUT"])
@@ -147,7 +148,7 @@ def update_post(post_id):
         if not updated_post:
             return jsonify({"message": "Post not found"}), 404
         updated_post["_id"] = str(updated_post["_id"])
-        return jsonify({"message": "Post updated", "post": updated_post})
+        return jsonify(updated_post)
     except Exception as e:
         return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
@@ -177,7 +178,8 @@ def create_comment():
         if not mongo.db.posts.find_one({"_id": ObjectId(data["post_id"])}):
             return jsonify({"message": "Post not found"}), 404
         result = mongo.db.comments.insert_one(data)
-        return jsonify({"_id": str(result.inserted_id), "message": "Comment created"}), 201
+        result["_id"] = str(result["_id"])
+        return jsonify(result), 201
     except Exception as e:
         return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
@@ -194,44 +196,55 @@ def update_comment(comment_id):
         if not updated_comment:
             return jsonify({"message": "Comment not found"}), 404
         update_comment["_id"] = str(updated_comment["_id"])
-        return jsonify({"message": "Comment updated", "comment": updated_comment})
+        return jsonify(updated_comment)
     except Exception as e:
         return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
 
 @app.route("/comments/<string:comment_id>", methods=["DELETE"])
 def delete_comment(comment_id):
-    result = mongo.db.comments.delete_one({"_id": ObjectId(comment_id)})
-    if result.deleted_count == 0:
-        return jsonify({"message": "Comment not found"}), 404
-    return 204
+    try:
+        result = mongo.db.comments.delete_one({"_id": ObjectId(comment_id)})
+        if result.deleted_count == 0:
+            return jsonify({"message": "Comment not found"}), 404
+        return 204
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
 
 @app.route("/media", methods=["GET"])
 def get_media():
-    media = mongo.db.media.find()
-    return jsonify(
-        [
-            {"_id": str(item["_id"]), "url": item["url"], "type": item["type"]}
-            for item in media
-        ]
-    )
+    return jsonify(list(mongo.db.media.find({})))
 
 
 @app.route("/media", methods=["POST"])
 def create_media():
-    data = request.get_json()
-    new_media = {"url": data["url"], "type": data["type"]}
-    result = mongo.db.media.insert_one(new_media)
-    return jsonify({"_id": str(result.inserted_id), "message": "Media created"}), 201
+    try:
+        data = request.get_json()
+        if (
+            data["post_id"]
+            and not mongo.db.posts.find_one({"_id": ObjectId(data["post_id"])})
+        ) or (
+            data["comment_id"]
+            and not mongo.db.comments.find_one({"_id": ObjectId(data["comment_id"])})
+        ):
+            return jsonify({"message": "Post not found"}), 404
+        result = mongo.db.media.insert_one(data)
+        result["_id"] = str(result["_id"])
+        return jsonify(result), 201
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
 
 @app.route("/media/<string:media_id>", methods=["DELETE"])
 def delete_media(media_id):
-    result = mongo.db.media.delete_one({"_id": ObjectId(media_id)})
-    if result.deleted_count == 0:
-        return jsonify({"message": "Media not found"}), 404
-    return 204
+    try:
+        result = mongo.db.media.delete_one({"_id": ObjectId(media_id)})
+        if result.deleted_count == 0:
+            return jsonify({"message": "Media not found"}), 404
+        return 204
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
 
 if __name__ == "__main__":
