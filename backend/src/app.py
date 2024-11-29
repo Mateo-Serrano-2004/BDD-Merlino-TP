@@ -12,13 +12,13 @@ with app.app_context():
     sql_db.create_all()
 
 
-@app.route("/sql/users", methods=["GET"])
+@app.route("/users", methods=["GET"])
 def get_users():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users])
 
 
-@app.route("/sql/users/<int:id>", methods=["GET"])
+@app.route("/users/<int:id>", methods=["GET"])
 def get_user(id):
     user = User.query.get(id)
     if user:
@@ -26,7 +26,7 @@ def get_user(id):
     return jsonify({"message": "User not found"}), 404
 
 
-@app.route("/sql/roles/<string:role_name>/users", methods=["GET"])
+@app.route("/roles/<string:role_name>/users", methods=["GET"])
 def create_user(role_name):
     data = request.get_json()
     new_user = User(name=data["name"], email=data["email"], role_name=role_name)
@@ -35,7 +35,7 @@ def create_user(role_name):
     return jsonify(new_user.to_dict()), 201
 
 
-@app.route("/sql/users/<int:id>", methods=["PUT"])
+@app.route("/users/<int:id>", methods=["PUT"])
 def update_user(role_name, id):
     data = request.get_json()
     user = User.query.get(id)
@@ -50,7 +50,7 @@ def update_user(role_name, id):
     return jsonify({"message": "User not found"}), 404
 
 
-@app.route("/sql/users/<int:id>", methods=["DELETE"])
+@app.route("/users/<int:id>", methods=["DELETE"])
 def delete_user(id):
     user = User.query.get(id)
     if user:
@@ -60,13 +60,13 @@ def delete_user(id):
     return jsonify({"message": "User not found"}), 404
 
 
-@app.route("/sql/roles", methods=["GET"])
+@app.route("/roles", methods=["GET"])
 def get_roles():
     roles = Role.query.all()
     return jsonify([role.to_dict() for role in roles])
 
 
-@app.route("/sql/roles/<string:name>", methods=["GET"])
+@app.route("/roles/<string:name>", methods=["GET"])
 def get_role(id):
     role = Role.query.get(id)
     if role:
@@ -74,7 +74,7 @@ def get_role(id):
     return jsonify({"message": "Role not found"}), 404
 
 
-@app.route("/sql/roles", methods=["POST"])
+@app.route("/roles", methods=["POST"])
 def create_role():
     data = request.get_json()
     if Role.query.get(data["name"]):
@@ -85,7 +85,7 @@ def create_role():
     return jsonify(new_role.to_dict()), 201
 
 
-@app.route("/sql/roles/<string:name>", methods=["PUT"])
+@app.route("/roles/<string:name>", methods=["PUT"])
 def update_role(name):
     data = request.get_json()
     role = Role.query.get(name)
@@ -96,7 +96,7 @@ def update_role(name):
     return jsonify({"message": "Role not found"}), 404
 
 
-@app.route("/sql/roles/<string:name>", methods=["DELETE"])
+@app.route("/roles/<string:name>", methods=["DELETE"])
 def delete_role(name):
     role = Role.query.get(name)
     if role:
