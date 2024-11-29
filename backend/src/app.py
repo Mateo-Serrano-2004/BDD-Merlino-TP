@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from config import Config
-from models import sql_db, User, Role, Post
+from models import sql_db, User, Role
 from flask_pymongo import PyMongo
 
 app = Flask(__name__)
