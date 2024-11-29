@@ -37,7 +37,7 @@ def create_user(role_name):
 
 
 @app.route("/users/<int:id>", methods=["PUT"])
-def update_user(role_name, id):
+def update_user(id):
     data = request.get_json()
     user = User.query.get(id)
     if user:
@@ -45,7 +45,7 @@ def update_user(role_name, id):
         user.email = data["email"]
         if not Role.query.get(data["role_name"]):
             return jsonify({"message": "Role not found"}), 404
-        user.role_name = role_name
+        user.role_name = data["role_name"]
         sqlite_db.session.commit()
         return jsonify(user.to_dict())
     return jsonify({"message": "User not found"}), 404
@@ -66,10 +66,9 @@ def get_roles():
     roles = Role.query.all()
     return jsonify([role.to_dict() for role in roles])
 
-
 @app.route("/roles/<string:name>", methods=["GET"])
-def get_role(id):
-    role = Role.query.get(id)
+def get_role(name):
+    role = Role.query.get(name)
     if role:
         return jsonify(role.to_dict())
     return jsonify({"message": "Role not found"}), 404
@@ -195,7 +194,7 @@ def update_comment(comment_id):
         )
         if not updated_comment:
             return jsonify({"message": "Comment not found"}), 404
-        update_comment["_id"] = str(updated_comment["_id"])
+        updated_comment["_id"] = str(updated_comment.inserted_id)
         return jsonify(updated_comment)
     except Exception as e:
         return jsonify({"message": "Error processing request", "error": str(e)}), 400
