@@ -1,15 +1,16 @@
+from bson import ObjectId
 from flask import Flask, request, jsonify
 from config import Config
-from models import sql_db, User, Role
+from models import sqlite_db, User, Role
 from flask_pymongo import PyMongo
 
 app = Flask(__name__)
 app.config.from_object(Config)
-sql_db.init_app(app)
+sqlite_db.init_app(app)
 mongo = PyMongo(app)
 
 with app.app_context():
-    sql_db.create_all()
+    sqlite_db.create_all()
 
 
 @app.route("/users", methods=["GET"])
@@ -30,8 +31,8 @@ def get_user(id):
 def create_user(role_name):
     data = request.get_json()
     new_user = User(name=data["name"], email=data["email"], role_name=role_name)
-    sql_db.session.add(new_user)
-    sql_db.session.commit()
+    sqlite_db.session.add(new_user)
+    sqlite_db.session.commit()
     return jsonify(new_user.to_dict()), 201
 
 
@@ -45,7 +46,7 @@ def update_user(role_name, id):
         if not Role.query.get(data["role_name"]):
             return jsonify({"message": "Role not found"}), 404
         user.role_name = role_name
-        sql_db.session.commit()
+        sqlite_db.session.commit()
         return jsonify(user.to_dict())
     return jsonify({"message": "User not found"}), 404
 
@@ -54,9 +55,9 @@ def update_user(role_name, id):
 def delete_user(id):
     user = User.query.get(id)
     if user:
-        sql_db.session.delete(user)
-        sql_db.session.commit()
-        return jsonify({"message": "User deleted"})
+        sqlite_db.session.delete(user)
+        sqlite_db.session.commit()
+        return 204
     return jsonify({"message": "User not found"}), 404
 
 
@@ -80,8 +81,8 @@ def create_role():
     if Role.query.get(data["name"]):
         return jsonify({"message": "Role already exists"}), 400
     new_role = Role(name=data["name"])
-    sql_db.session.add(new_role)
-    sql_db.session.commit()
+    sqlite_db.session.add(new_role)
+    sqlite_db.session.commit()
     return jsonify(new_role.to_dict()), 201
 
 
@@ -91,7 +92,7 @@ def update_role(name):
     role = Role.query.get(name)
     if role:
         role.name = data["name"]
-        sql_db.session.commit()
+        sqlite_db.session.commit()
         return jsonify(role.to_dict())
     return jsonify({"message": "Role not found"}), 404
 
@@ -100,37 +101,137 @@ def update_role(name):
 def delete_role(name):
     role = Role.query.get(name)
     if role:
-        sql_db.session.delete(role)
-        sql_db.session.commit()
-        return jsonify({"message": "Role deleted"})
+        sqlite_db.session.delete(role)
+        sqlite_db.session.commit()
+        return 204
     return jsonify({"message": "Role not found"}), 404
 
 
-@app.route("/nosql/users", methods=["GET"])
-def get_users_nosql():
-    users = list(mongo.db.usuarios.find({}, {"_id": 0}))
-    return jsonify(users)
+@app.route("/posts", methods=["GET"])
+def get_posts():
+    return jsonify(list(mongo.db.posts.find({})))
 
 
-@app.route("/nosql/posts/<string:role_name>/users", methods=["POST"])
-def create_user_nosql(role_name):
+@app.route("/posts/<string:id>", methods=["GET"])
+def get_post(id):
+    try:
+        post = mongo.db.posts.find_one({"_id": ObjectId(id)})
+        if not post:
+            return jsonify({"message": "Post not found"}), 404
+        post["_id"] = str(post["_id"])
+        return jsonify(post)
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
+
+
+@app.route("/posts", methods=["POST"])
+def create_post():
     data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data"}), 400
+    if not User.query.get(data["user_id"]):
+        return jsonify({"message": "User not found"}), 404
+    result = mongo.db.posts.insert_one(data)
+    return jsonify({"_id": str(result.inserted_id), "message": "Post created"}), 201
 
-    if "name" not in data.keys():
-        return jsonify({"error": "Name not provided"}), 400
-    if "email" not in data.keys():
-        return jsonify({"error": "Email not provided"}), 400
 
-    result = mongo.db.usuarios.insert_one(data)
+@app.route("/posts/<string:post_id>", methods=["PUT"])
+def update_post(post_id):
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"message": "No data provided"}), 400
+        if data["user_id"] and not User.query.get(data["user_id"]):
+            return jsonify({"message": "User not found"}), 404
+        updated_post = mongo.db.posts.find_one_and_update(
+            {"_id": ObjectId(post_id)}, {"$set": data}, return_document=True
+        )
+        if not updated_post:
+            return jsonify({"message": "Post not found"}), 404
+        updated_post["_id"] = str(updated_post["_id"])
+        return jsonify({"message": "Post updated", "post": updated_post})
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
-    return (
-        jsonify(
-            {"mensaje": "Usuario agregado con exito", "id": str(result.inserted_id)}
-        ),
-        201,
+
+@app.route("/posts/<string:post_id>", methods=["DELETE"])
+def delete_post(post_id):
+    try:
+        result = mongo.db.posts.delete_one({"_id": ObjectId(post_id)})
+        if result.deleted_count == 0:
+            return jsonify({"message": "Post not found"}), 404
+        return 204
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
+
+
+@app.route("/comments", methods=["GET"])
+def get_comments():
+    return jsonify(list(mongo.db.comments.find({})))
+
+
+@app.route("/comments", methods=["POST"])
+def create_comment():
+    try:
+        data = request.get_json()
+        if not User.query.get(data["user_id"]):
+            return jsonify({"message": "User not found"}), 404
+        if not mongo.db.posts.find_one({"_id": ObjectId(data["post_id"])}):
+            return jsonify({"message": "Post not found"}), 404
+        result = mongo.db.comments.insert_one(data)
+        return jsonify({"_id": str(result.inserted_id), "message": "Comment created"}), 201
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
+
+
+@app.route("/comments/<string:comment_id>", methods=["PUT"])
+def update_comment(comment_id):
+    try:
+        data = request.get_json()
+        updated_comment = mongo.db.comments.find_one_and_update(
+            {"_id": ObjectId(comment_id)},
+            {"$set": data},
+            return_document=True,
+        )
+        if not updated_comment:
+            return jsonify({"message": "Comment not found"}), 404
+        update_comment["_id"] = str(updated_comment["_id"])
+        return jsonify({"message": "Comment updated", "comment": updated_comment})
+    except Exception as e:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
+
+
+@app.route("/comments/<string:comment_id>", methods=["DELETE"])
+def delete_comment(comment_id):
+    result = mongo.db.comments.delete_one({"_id": ObjectId(comment_id)})
+    if result.deleted_count == 0:
+        return jsonify({"message": "Comment not found"}), 404
+    return 204
+
+
+@app.route("/media", methods=["GET"])
+def get_media():
+    media = mongo.db.media.find()
+    return jsonify(
+        [
+            {"_id": str(item["_id"]), "url": item["url"], "type": item["type"]}
+            for item in media
+        ]
     )
+
+
+@app.route("/media", methods=["POST"])
+def create_media():
+    data = request.get_json()
+    new_media = {"url": data["url"], "type": data["type"]}
+    result = mongo.db.media.insert_one(new_media)
+    return jsonify({"_id": str(result.inserted_id), "message": "Media created"}), 201
+
+
+@app.route("/media/<string:media_id>", methods=["DELETE"])
+def delete_media(media_id):
+    result = mongo.db.media.delete_one({"_id": ObjectId(media_id)})
+    if result.deleted_count == 0:
+        return jsonify({"message": "Media not found"}), 404
+    return 204
 
 
 if __name__ == "__main__":

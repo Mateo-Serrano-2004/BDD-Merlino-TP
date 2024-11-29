@@ -1,15 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
 
-sql_db = SQLAlchemy()
+sqlite_db = SQLAlchemy()
 
 
-class User(sql_db.Model):
+class User(sqlite_db.Model):
     __tablename__ = "users"
-    id = sql_db.Column(sql_db.Integer, primary_key=True)
-    name = sql_db.Column(sql_db.String(80), nullable=False)
-    email = sql_db.Column(sql_db.String(120), unique=True, nullable=False)
-    role_name = sql_db.Column(
-        sql_db.String(50), sql_db.ForeignKey("roles.name"), nullable=False
+    id = sqlite_db.Column(sqlite_db.Integer, primary_key=True)
+    name = sqlite_db.Column(sqlite_db.String(80), nullable=False)
+    email = sqlite_db.Column(sqlite_db.String(120), unique=True, nullable=False)
+    role_name = sqlite_db.Column(
+        sqlite_db.String(50), sqlite_db.ForeignKey("roles.name"), nullable=False
     )
 
     def to_dict(self):
@@ -20,12 +20,12 @@ class User(sql_db.Model):
         }
 
 
-class Role(sql_db.Model):
+class Role(sqlite_db.Model):
     __tablename__ = "roles"
-    name = sql_db.Column(sql_db.String(50), primary_key=True)
-    description = sql_db.Column(sql_db.Text, nullable=False)
+    name = sqlite_db.Column(sqlite_db.String(50), primary_key=True)
+    description = sqlite_db.Column(sqlite_db.Text, nullable=False)
 
-    users = sql_db.relationship("User", backref="role", lazy=True)
+    users = sqlite_db.relationship("User", backref="role", lazy=True)
 
     def to_dict(self):
         return {"name": self.name, "description": self.description}
