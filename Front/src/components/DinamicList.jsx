@@ -23,8 +23,8 @@ const DynamicListContext = ({ refreshTrigger, url }) => {
 
   if (loading) return <p>Cargando...</p>;
 
-  if (items.length === 0) return <p>No hay usuarios registrados o esta fallando el back</p>;
-  
+  if (items.length === 0) return <p>No hay elementos creados todavia</p>;
+
   return (
     <ul>
       {items.map((item) => (
