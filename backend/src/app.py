@@ -1,13 +1,37 @@
 from flask import Flask, request, jsonify
 from config import Config
 from models import sql_db, User, Role, Post
+from flask_pymongo import PyMongo
 
 app = Flask(__name__)
 app.config.from_object(Config)
 sql_db.init_app(app)
+mongo = PyMongo(app)
 
 with app.app_context():
     sql_db.create_all()
+
+
+@app.route("/nosql/users", methods=["GET"])
+def get_users_nosql():
+    users = list(mongo.db.usuarios.find({}, {"_id": 0}))
+    return jsonify(users)
+
+
+@app.route("/nosql/posts/<string:role_name>/users", methods=["POST"])
+def create_user_nosql(role_name):
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data"}), 400
+
+    if "name" not in data.keys():
+        return jsonify({"error": "Name not provided"}), 400
+    if "email" not in data.keys():
+        return jsonify({"error": "Email not provided"}), 400
+
+    result = mongo.db.usuarios.insert_one(data)
+
+    return jsonify({"mensaje": "Usuario agregado con exito", "id": str(result.inserted_id)}), 201
 
 
 @app.route("/sql/users", methods=["GET"])
@@ -150,7 +174,6 @@ def delete_post(id):
         sql_db.session.commit()
         return jsonify({"message": "Post deleted"})
     return jsonify({"message": "Post not found"}), 404
-
 
 if __name__ == "__main__":
     app.run(debug=True)
