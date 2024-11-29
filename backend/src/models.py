@@ -12,8 +12,6 @@ class User(sql_db.Model):
         sql_db.String(50), sql_db.ForeignKey("roles.name"), nullable=False
     )
 
-    posts = sql_db.relationship("Post", backref="user", lazy=True)
-
     def to_dict(self):
         return {
             "id": self.id,
@@ -31,22 +29,3 @@ class Role(sql_db.Model):
 
     def to_dict(self):
         return {"name": self.name, "description": self.description}
-
-
-class Post(sql_db.Model):
-    __tablename__ = "posts"
-    id = sql_db.Column(sql_db.Integer, primary_key=True)
-    title = sql_db.Column(sql_db.String(100), nullable=False)
-    content = sql_db.Column(sql_db.Text, nullable=False)
-    user_id = sql_db.Column(
-        sql_db.Integer, sql_db.ForeignKey("users.id"), nullable=False
-    )
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "content": self.content,
-            "user_id": self.user_id,
-            "user": self.user.to_dict(),
-        }

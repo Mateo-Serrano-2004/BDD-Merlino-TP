@@ -12,28 +12,6 @@ with app.app_context():
     sql_db.create_all()
 
 
-@app.route("/nosql/users", methods=["GET"])
-def get_users_nosql():
-    users = list(mongo.db.usuarios.find({}, {"_id": 0}))
-    return jsonify(users)
-
-
-@app.route("/nosql/posts/<string:role_name>/users", methods=["POST"])
-def create_user_nosql(role_name):
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data"}), 400
-
-    if "name" not in data.keys():
-        return jsonify({"error": "Name not provided"}), 400
-    if "email" not in data.keys():
-        return jsonify({"error": "Email not provided"}), 400
-
-    result = mongo.db.usuarios.insert_one(data)
-
-    return jsonify({"mensaje": "Usuario agregado con exito", "id": str(result.inserted_id)}), 201
-
-
 @app.route("/sql/users", methods=["GET"])
 def get_users():
     users = User.query.all()
@@ -48,7 +26,7 @@ def get_user(id):
     return jsonify({"message": "User not found"}), 404
 
 
-@app.route("/sql/posts/<string:role_name>/users", methods=["GET"])
+@app.route("/sql/roles/<string:role_name>/users", methods=["GET"])
 def create_user(role_name):
     data = request.get_json()
     new_user = User(name=data["name"], email=data["email"], role_name=role_name)
@@ -126,54 +104,32 @@ def delete_role(id):
     return jsonify({"message": "Role not found"}), 404
 
 
-@app.route("/sql/posts", methods=["GET"])
-def get_posts():
-    posts = Post.query.all()
-    return jsonify([post.to_dict() for post in posts])
+@app.route("/nosql/users", methods=["GET"])
+def get_users_nosql():
+    users = list(mongo.db.usuarios.find({}, {"_id": 0}))
+    return jsonify(users)
 
 
-@app.route("/sql/posts/<int:id>", methods=["GET"])
-def get_post(id):
-    post = Post.query.get(id)
-    if post:
-        return jsonify(post.to_dict())
-    return jsonify({"message": "Post not found"}), 404
-
-
-@app.route("/sql/users/<int:user_id>/posts", methods=["POST"])
-def create_post(user_id):
+@app.route("/nosql/posts/<string:role_name>/users", methods=["POST"])
+def create_user_nosql(role_name):
     data = request.get_json()
-    if not User.query.get(user_id):
-        return jsonify({"message": "User not found"}), 404
-    new_post = Post(title=data["title"], content=data["content"], user_id=user_id)
-    sql_db.session.add(new_post)
-    sql_db.session.commit()
-    return jsonify(new_post.to_dict()), 201
+    if not data:
+        return jsonify({"error": "No data"}), 400
 
+    if "name" not in data.keys():
+        return jsonify({"error": "Name not provided"}), 400
+    if "email" not in data.keys():
+        return jsonify({"error": "Email not provided"}), 400
 
-@app.route("/sql/posts/<int:id>", methods=["PUT"])
-def update_post(id):
-    data = request.get_json()
-    post = Post.query.get(id)
-    if post:
-        post.title = data["title"]
-        post.content = data["content"]
-        if not User.query.get(data["user_id"]):
-            return jsonify({"message": "User not found"}), 404
-        post.user_id = data["user_id"]
-        sql_db.session.commit()
-        return jsonify(post.to_dict())
-    return jsonify({"message": "Post not found"}), 404
+    result = mongo.db.usuarios.insert_one(data)
 
+    return (
+        jsonify(
+            {"mensaje": "Usuario agregado con exito", "id": str(result.inserted_id)}
+        ),
+        201,
+    )
 
-@app.route("/sql/posts/<int:id>", methods=["DELETE"])
-def delete_post(id):
-    post = Post.query.get(id)
-    if post:
-        sql_db.session.delete(post)
-        sql_db.session.commit()
-        return jsonify({"message": "Post deleted"})
-    return jsonify({"message": "Post not found"}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
