@@ -16,6 +16,7 @@ class User(sqlite_db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "email": self.email,
             "role_name": self.role_name,
         }
 
