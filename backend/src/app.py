@@ -112,11 +112,14 @@ def update_role(name):
     data = request.get_json()
 
     role = Role.query.get(name)
-
-    if role:
-        role.name = data["name"]
-        sqlite_db.session.commit()
-        return jsonify(role.to_dict()), 200
+    try:
+        if role:
+            role.name = data["name"]
+            role.description = data["description"]
+            sqlite_db.session.commit()
+            return jsonify(role.to_dict()), 200
+    except Exception:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
     return jsonify({"message": "Role not found"}), 404
 
