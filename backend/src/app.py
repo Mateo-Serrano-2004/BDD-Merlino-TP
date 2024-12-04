@@ -71,9 +71,7 @@ def delete_user(id):
     if user:
         sqlite_db.session.delete(user)
         sqlite_db.session.commit()
-        posts = mongo.db.posts.delete_many({"user_id": id})
-        for post in posts:
-            mongo.db.comments.delete_many({"post_id": post["_id"]})
+        mongo.db.posts.delete_many({"user_id": id})
         mongo.db.comments.delete_many({"user_id": id})
         return jsonify(), 204
     return jsonify({"message": "User not found"}), 404
