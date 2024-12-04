@@ -27,10 +27,24 @@ def get_user(id):
     return jsonify({"message": "User not found"}), 404
 
 
-@app.route("/roles/<string:role_name>/users", methods=["GET"])
+@app.route("/roles/<string:role_name>/users", methods=["POST"])
 def create_user(role_name):
     data = request.get_json()
-    new_user = User(name=data["name"], email=data["email"], role_name=role_name)
+
+    if "name" not in data:
+        return jsonify({"message": "Name not provided"}), 400
+    if "email" not in data:
+        return jsonify({"message": "Email not provided"}), 400
+    if not role_name:
+        return jsonify({"message": "Role name cannot be blank"}), 400
+
+    role = Role.query.get(role_name)
+
+    if not role:
+        return jsonify({"message": "Role name not found"}), 404
+
+    new_user = User(name=data["name"], email=data["email"], role_name=role.name)
+
     sqlite_db.session.add(new_user)
     sqlite_db.session.commit()
     return jsonify(new_user.to_dict()), 201
@@ -81,22 +95,31 @@ def get_role(name):
 @app.route("/roles", methods=["POST"])
 def create_role():
     data = request.get_json()
-    if Role.query.get(data["name"]):
-        return jsonify({"message": "Role already exists"}), 400
-    new_role = Role(name=data["name"], description=data["description"])
+
+    try:
+        if Role.query.get(data["name"]):
+            return jsonify({"message": "Role already exists"}), 400
+        new_role = Role(name=data["name"], description=data["description"])
+    except Exception:
+        return jsonify({"message": "Error processing request", "error": str(e)}), 400
+
     sqlite_db.session.add(new_role)
     sqlite_db.session.commit()
+
     return jsonify(new_role.to_dict()), 201
 
 
 @app.route("/roles/<string:name>", methods=["PUT"])
 def update_role(name):
     data = request.get_json()
+
     role = Role.query.get(name)
+
     if role:
         role.name = data["name"]
         sqlite_db.session.commit()
         return jsonify(role.to_dict()), 200
+
     return jsonify({"message": "Role not found"}), 404
 
 
