@@ -44,11 +44,36 @@ Asegúrate de que el servicio de MongoDB esté corriendo.
     sudo service mongod start 
 ```  
 
-- En Windows, inicia MongoDB según las instrucciones específicas de tu sistema operativo.
+- En Windows, inicia MongoDB mediante la aplicacion de MongoDB Community.
 
 ### 2. Ejecuta la aplicación
 
 ```bash  
 cd src  
-python run.py  
+python app.py  
+```
+
+# Frontend
+
+El backend esta desarrollado con Node.js y el framework Astro.
+
+## Ejecucion
+
+### 1. Ejecutar la aplicacion
+
+Para ejecutar la aplicacion, asegurarse de tener instalado node.js.
+
+Luego pararse en la carpeta ``Front``, ejecutando el comando (o abriendo una terminal en ella):
+```
+cd Front
+```
+
+Posteriormente, instalar las dependencias mediante node.js:
+```
+npm install
+```
+
+Por último, levantar la app:
+```
+npm start
 ```
