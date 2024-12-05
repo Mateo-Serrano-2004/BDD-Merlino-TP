@@ -1,39 +1,69 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
+import DinamicList from '../components/DinamicList.jsx';
+import { FormToRole , FormToUser } from '../components/Forms.jsx';
+import links from '../../public/links.json';
 ---
 
 <Layout title="Page SQL BDD" description='Page where we management a bdd SQL to create, get, update and delete a lot of squemas' icon='/favicon.svg'>
 	<main>
 		<ul role="list" class="link-card-grid">
 			<Card
-				href="/usersql"
-				title="Go to admin user"
-				body="In this page we can create, get, update and delete a lot of users"
-			/>
-			<Card
-				href="/rolessql"
-				title="Go to admin roles"
-				body="In this page we can create, get, update and delete a lot of roles"
-			/>
-			<Card
 				href="/"
 				title="Go back to the index"
 				body="This button return to the index page"
 			/>
 		</ul>
+		<article>
+			<h2>SQL BDD with users</h2>
+			<p>
+				Obtain the users of the SQL database, you can create, get, update and delete a lot of schemas.
+			</p>
+			<h3>View List of all users</h3>
+			<DinamicList url={links['development-backend']['other-links'].sql.user['get-users']} client:load/>
+			<h3>Create a new user</h3>
+			<FormToUser url={links['development-backend']['other-links'].sql.user['create-user']} method={"POST"} />
+			<h3>Update a user</h3>
+			<FormToUser url={links['development-backend']['other-links'].sql.user['update-user']} method={"PUT"} />
+
+		</article>
+		<article>
+			<h2>SQL BDD with roles</h2>
+			<p>
+				Obtain the roles of the SQL database, you can create, get, update and delete a lot of schemas.
+			</p>
+			<h3>View List of all roles</h3>
+			<DinamicList url={links['development-backend']['other-links'].sql.roles['get-roles']} client:load/>
+			<h3>Create a new role</h3>
+			<FormToRole url={links['development-backend']['other-links'].sql.roles['create-role']} method={"POST"} />
+			<h3>Update a role</h3>
+			<FormToRole url={links['development-backend']['other-links'].sql.roles['update-role']} method={"PUT"} />
 	</main>
 </Layout>
 <style>
 	main {
 		display: flex;
+		flex-direction: row-reverse;
 		align-items: center;
 		justify-content: center;
 		min-height: 100vh;
+		gap: 2rem;
 	}
 	.link-card-grid {
 		display: flex;
 		flex-direction: column;
 		gap: 2rem;
+	}
+	<ul {
+		list-style-type: none;
+		padding: 0;
+		max-width: max-content;
+	}
+	article {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		max-width: 30vw;
 	}
 </style>

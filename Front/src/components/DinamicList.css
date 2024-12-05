@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 40%;
+  width: 100%;
   min-height: 100%;
   background-color: rgba(134, 119, 119, 0.2);
   backdrop-filter: blur(50%); /* Aplica el desenfoque */

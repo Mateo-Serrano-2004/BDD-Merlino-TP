@@ -4,22 +4,16 @@
         "other-links": {
             "sql": {
                 "user": {
-                    "get-users": "http://localhost:5000/sql/users",
-                    "create-user": "http://localhost:5000/sql/users",
-                    "update-user": "http://localhost:5000/sql/user",
-                    "delete-user": "http://localhost:5000/sql/user"
+                    "get-users": "http://localhost:5000/users",
+                    "create-user": "http://localhost:5000/users",
+                    "update-user": "http://localhost:5000/user",
+                    "delete-user": "http://localhost:5000/user"
                 },
                 "roles": {
-                    "get-roles": "http://localhost:5000/sql/roles",
-                    "create-role": "http://localhost:5000/sql/roles",
-                    "update-role": "http://localhost:5000/sql/roles",
-                    "delete-role": "http://localhost:5000/sql/roles"
-                },
-                "posts": {
-                    "get-posts": "http://localhost:5000/sql/posts",
-                    "create-post": "http://localhost:5000/sql/posts",
-                    "update-post": "http://localhost:5000/sql/posts",
-                    "delete-post": "http://localhost:5000/sql/posts"
+                    "get-roles": "http://localhost:5000/roles",
+                    "create-role": "http://localhost:5000/roles",
+                    "update-role": "http://localhost:5000/roles",
+                    "delete-role": "http://localhost:5000/roles"
                 }
             }
         }
