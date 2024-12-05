@@ -34,7 +34,7 @@ const DynamicListContext = ({ refreshTrigger, url }) => {
   );
 };
 
-const DinamicList = ({ url  }) => {
+const DinamicList = ({ url }) => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleRefresh = () => {

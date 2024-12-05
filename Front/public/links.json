@@ -1,20 +1,11 @@
 {
     "development-backend": {
         "description": "Development Backend",
+        "url": "http://localhost:5000",
         "other-links": {
             "sql": {
-                "user": {
-                    "get-users": "http://localhost:5000/users",
-                    "create-user": "http://localhost:5000/users",
-                    "update-user": "http://localhost:5000/user",
-                    "delete-user": "http://localhost:5000/user"
-                },
-                "roles": {
-                    "get-roles": "http://localhost:5000/roles",
-                    "create-role": "http://localhost:5000/roles",
-                    "update-role": "http://localhost:5000/roles",
-                    "delete-role": "http://localhost:5000/roles"
-                }
+                "user": "/users",
+                "roles": "/roles"
             }
         }
     },

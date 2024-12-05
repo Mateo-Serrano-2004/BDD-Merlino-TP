@@ -27,7 +27,7 @@ export const FormToRole = ({ url, method }) => {
   );
 };
 
-export const FormToUser = ({ url, method }) => {
+export const FormToUser = ({ url,method }) => {
   const { register, handleSubmit } = useForm();
   const [items, setItems] = useState([]);
   useEffect(() => {
@@ -45,7 +45,13 @@ export const FormToUser = ({ url, method }) => {
   }, []); // Se ejecuta solo una vez
 
   const onSubmit = (data) => {
-    fetch(url, {
+    let newurl = '';
+    if (method === 'POST') {
+      newurl = links['development-backend'].url + links['development-backend']['other-links'].sql.roles + data["roles-list"] + links['development-backend']['other-links'].sql.users;
+    } else {
+      newurl = url;
+    }
+    fetch(newurl, {
       method: method,
       headers: {
         'Content-Type': 'application/json',
