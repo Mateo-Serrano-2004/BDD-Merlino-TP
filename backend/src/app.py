@@ -1,10 +1,12 @@
 from bson import ObjectId
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from config import Config
 from models import sqlite_db, User, Role
 from flask_pymongo import PyMongo
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 app.config.from_object(Config)
 sqlite_db.init_app(app)
 mongo = PyMongo(app)
@@ -98,13 +100,13 @@ def create_role():
         if Role.query.get(data["name"]):
             return jsonify({"message": "Role already exists"}), 400
         new_role = Role(name=data["name"], description=data["description"])
-    except Exception:
+
+        sqlite_db.session.add(new_role)
+        sqlite_db.session.commit()
+
+        return jsonify(new_role.to_dict()), 201
+    except Exception as e:
         return jsonify({"message": "Error processing request", "error": str(e)}), 400
-
-    sqlite_db.session.add(new_role)
-    sqlite_db.session.commit()
-
-    return jsonify(new_role.to_dict()), 201
 
 
 @app.route("/roles/<string:name>", methods=["PUT"])
@@ -118,7 +120,7 @@ def update_role(name):
             role.description = data["description"]
             sqlite_db.session.commit()
             return jsonify(role.to_dict()), 200
-    except Exception:
+    except Exception as e:
         return jsonify({"message": "Error processing request", "error": str(e)}), 400
 
     return jsonify({"message": "Role not found"}), 404
