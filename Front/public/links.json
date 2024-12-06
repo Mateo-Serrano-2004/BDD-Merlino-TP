@@ -5,7 +5,8 @@
         "other-links": {
             "sql": {
                 "user": "/users",
-                "roles": "/roles"
+                "roles": "/roles",
+                "posts": "/posts"
             }
         }
     },

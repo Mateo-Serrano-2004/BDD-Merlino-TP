@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { FormToUser, FormToPost } from '../../components/Forms.jsx';
+import links from '../../../public/links.json';
+import { DeleteButtom } from '../../components/DeleteButtom';
+import DinamicList from '../../components/DinamicList';
+
+const { id_client } = Astro.params;
+const data = await fetch(links['development-backend'].url+links['development-backend']['other-links'].sql.user + "/" + id_client)
+	.then((res) => res.json())
+	.then((data) => data)
+	.catch((err) => console.error("Error:", err));
+---
+
+<Layout title="Page SQL BDD" description='Page where we management a bdd SQL to create, get, update and delete a lot of squemas' icon='/favicon.svg'>
+	<main>
+		<h1>{data.name}</h1>
+		<p>{data.email}</p>
+		<p>{data.role_name}</p>
+		<FormToUser url={links['development-backend'].url + links['development-backend']['other-links'].sql.user + "/" + data.id} method={"PUT"} client:load/>
+		<DeleteButtom url={links['development-backend'].url + links['development-backend']['other-links'].sql.user + "/" + data.id} client:load />
+		<div>
+			<h3>Create a posts about this user</h3>
+			<FormToPost url={links['development-backend'].url + links['development-backend']['other-links'].sql.posts} method={"POST"} id_client={id_client} client:load/>
+			<h3>Posts</h3>
+			<DinamicList url={links['development-backend'].url + links['development-backend']['other-links'].sql.posts } redirection={Astro.url.pathname + "/posts"} client:load/>
+		</div>
+	</main>
+</Layout>
+<style>
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 100vh;
+		gap: 2rem;
+	}
+
+</style>

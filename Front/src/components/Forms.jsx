@@ -86,3 +86,36 @@ export const FormToUser = ({ url,method }) => {
     </form>
   );
 };
+
+export const FormToPost = ({ url,method, id_client }) => {
+  const { register, handleSubmit } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+    console.log(url);
+    console.log(method);
+    console.log(id_client);
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .then(() => window.location.reload())
+      .catch((error) => console.error('Error:', error));
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input type="text" {...register('user_id')} value={id_client} required hidden/>
+      <fieldset>
+        <input type="text" {...register('content[text]')} value={"No se introdujo ningun mensaje en este posts"}/>
+        <input type="file" {...register('content[media]')}/>
+      </fieldset>
+      <button type="submit">Enviar</button>
+    </form>
+  );
+};

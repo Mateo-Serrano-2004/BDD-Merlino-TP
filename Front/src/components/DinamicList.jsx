@@ -28,7 +28,7 @@ const DynamicListContext = ({ refreshTrigger, url, redirection }) => {
   return (
     <>
       {items.map((item) => (
-        <a key={item.id} href={redirection + "/"+ (redirection === "/roles" ? item.name : item.id)}>{item.name}</a>
+        <a key={item.id} href={redirection + "/"+ (redirection === "/roles" ? item.name : item.id)}>{redirection.endsWith("/posts") ? item.text : item.name}</a>
       ))}
     </>
 
