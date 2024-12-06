@@ -21,7 +21,7 @@ import links from '../../public/links.json';
 				Obtain the users of the SQL database, you can create, get, update and delete a lot of schemas.
 			</p>
 			<h3>View List of all users</h3>
-			<DinamicList url={links['development-backend'].url + links['development-backend']['other-links'].sql.user} client:load/>
+			<DinamicList url={links['development-backend'].url + links['development-backend']['other-links'].sql.user} redirection={links['development-backend']['other-links'].sql.user} client:load/>
 			<h3>Create a new user</h3>
 			<FormToUser url={links['development-backend'].url} method={'POST'} client:load/>
 
@@ -32,7 +32,7 @@ import links from '../../public/links.json';
 				Obtain the roles of the SQL database, you can create, get, update and delete a lot of schemas.
 			</p>
 			<h3>View List of all roles</h3>
-			<DinamicList url={links['development-backend'].url + links['development-backend']['other-links'].sql.roles} client:load/>
+			<DinamicList url={links['development-backend'].url + links['development-backend']['other-links'].sql.roles} redirection={links['development-backend']['other-links'].sql.roles} client:load/>
 			<h3>Create a new role</h3>
 			<FormToRole url={links['development-backend'].url + links['development-backend']['other-links'].sql.roles} method='POST' client:load />
 	</main>

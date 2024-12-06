@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import "./DinamicList.css";
 
-const DynamicListContext = ({ refreshTrigger, url }) => {
+const DynamicListContext = ({ refreshTrigger, url, redirection }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,15 +26,16 @@ const DynamicListContext = ({ refreshTrigger, url }) => {
   if (items.length === 0) return <p>No hay elementos creados todavia</p>;
 
   return (
-    <ul>
+    <>
       {items.map((item) => (
-        <li key={item.id}>{item.nombre}</li>
+        <a key={item.id} href={redirection + "/"+ (redirection === "/roles" ? item.name : item.id)}>{item.name}</a>
       ))}
-    </ul>
+    </>
+
   );
 };
 
-const DinamicList = ({ url }) => {
+const DinamicList = ({ url, redirection }) => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleRefresh = () => {
@@ -44,7 +45,7 @@ const DinamicList = ({ url }) => {
   return (
     <div className='cover'>
       <button className='updateButton' onClick={handleRefresh}>Actualizar Lista</button>
-      <DynamicListContext refreshTrigger={refreshTrigger} url={url} />
+      <DynamicListContext refreshTrigger={refreshTrigger} url={url} redirection={redirection} />
     </div>
   );
 };

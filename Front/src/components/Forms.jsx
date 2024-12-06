@@ -33,9 +33,10 @@ export const FormToUser = ({ url,method }) => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await fetch(links['development-backend']['other-links'].sql.roles['get-roles']);
+        const response = await fetch(links['development-backend'].url + links['development-backend']['other-links'].sql.roles);
         const data = await response.json();
         setItems(data);
+        console.log(items);
       } catch (error) {
         console.error('Error al obtener los datos:', error);
       }
