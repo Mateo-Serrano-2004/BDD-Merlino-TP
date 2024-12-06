@@ -1,0 +1,17 @@
+{
+    "development-backend": {
+        "description": "Development Backend",
+        "url": "http://localhost:5000",
+        "other-links": {
+            "sql": {
+                "user": "/users",
+                "roles": "/roles",
+                "posts": "/posts"
+            }
+        }
+    },
+    "production-backend": {
+        "url": "https://backend.com",
+        "description": "Production Backend"
+    }
+}
