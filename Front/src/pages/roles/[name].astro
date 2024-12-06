@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { FormToRole } from '../../components/Forms.jsx';
 import links from '../../../public/links.json';
+import { DeleteButtom } from '../../components/DeleteButtom';
 
 const { name } = Astro.params;
 
@@ -16,6 +17,7 @@ const data = await fetch(links['development-backend'].url+links['development-bac
 		<h1>{data.name}</h1>
 		<p>{data.description}</p>
 		<FormToRole url={links['development-backend'].url + links['development-backend']['other-links'].sql.roles + "/" + data.name} method={"PUT"} client:load/>
+		<DeleteButtom url={links['development-backend'].url + links['development-backend']['other-links'].sql.roles + "/" + data.name} client:load/>
 	</main>
 </Layout>
 <style>

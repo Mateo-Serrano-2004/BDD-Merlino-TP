@@ -19,6 +19,7 @@ export const FormToRole = ({ url, method }) => {
     })
       .then((response) => response.json())
       .then((data) => console.log(data))
+      .then(() => window.location.replace('/sql'))
       .catch((error) => console.error('Error:', error));
   };
 
@@ -64,6 +65,7 @@ export const FormToUser = ({ url,method }) => {
     })
       .then((response) => response.json())
       .then((data) => console.log(data))
+      .then(() => window.location.replace('/sql'))
       .catch((error) => console.error('Error:', error));
   };
 
