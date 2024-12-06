@@ -113,7 +113,7 @@ export const FormToPost = ({ url,method, id_client }) => {
       <input type="text" {...register('user_id')} value={id_client} required hidden/>
       <fieldset>
         <input type="text" {...register('content[text]')} value={"No se introdujo ningun mensaje en este posts"}/>
-        <input type="file" {...register('content[media]')}/>
+        <input type="text" {...register('content[media]')}/>
       </fieldset>
       <button type="submit">Enviar</button>
     </form>
