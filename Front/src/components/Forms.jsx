@@ -6,6 +6,9 @@ export const FormToRole = ({ url, method }) => {
   const { register, handleSubmit } = useForm();
 
   const onSubmit = (data) => {
+    console.log(data);
+    console.log(url);
+    console.log(method);
     data["name"] = data["name"].replace(/ /g, '_');
     fetch(url, {
       method: method,
@@ -48,7 +51,7 @@ export const FormToUser = ({ url,method }) => {
   const onSubmit = (data) => {
     let newurl = '';
     if (method === 'POST') {
-      newurl = links['development-backend'].url + links['development-backend']['other-links'].sql.roles + "/" + data["role"] + links['development-backend']['other-links'].sql.user;
+      newurl = links['development-backend'].url + links['development-backend']['other-links'].sql.roles + "/" + data["role_name"] + links['development-backend']['other-links'].sql.user;
     } else {
       newurl = url;
     }
@@ -68,7 +71,7 @@ export const FormToUser = ({ url,method }) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <input type="text" {...register('name')} required/>
       <input type="text" {...register('email')} required/>
-      <input list="roles-list" {...register('role')} required/>
+      <input list="roles-list" {...register('role_name')} required/>
       <datalist id="roles-list">
         {items.length === 0 ?
           <option value="No hay roles creados todavia">No hay roles creados todavia</option> :

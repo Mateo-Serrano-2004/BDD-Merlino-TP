@@ -1,14 +1,28 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { FormToRole , FormToUser } from '../../components/Forms.jsx';
+import { FormToRole } from '../../components/Forms.jsx';
 import links from '../../../public/links.json';
+
+const { name } = Astro.params;
+
+const data = await fetch(links['development-backend'].url+links['development-backend']['other-links'].sql.roles + "/" + name)
+	.then((res) => res.json())
+	.then((data) => data)
+	.catch((err) => console.error("Error:", err));
 ---
 
 <Layout title="Page SQL BDD" description='Page where we management a bdd SQL to create, get, update and delete a lot of squemas' icon='/favicon.svg'>
 	<main>
-		<FormToUser url={links['development-backend']['other-links'].sql.user['update-user']} method={"PUT"} />
+		<h1>{data.name}</h1>
+		<p>{data.description}</p>
+		<FormToRole url={links['development-backend'].url + links['development-backend']['other-links'].sql.roles + "/" + data.name} method={"PUT"} client:load/>
 	</main>
 </Layout>
 <style>
-
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+	}
 </style>
